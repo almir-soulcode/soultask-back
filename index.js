@@ -27,7 +27,32 @@ app.post("/tarefas", async (req, res) => {
 });
 
 // Listagem de todas as Tarefas (GET)
+app.get("/tarefas", async (req, res) => {
+  // Realiza uma busca de todos os documentos na coleção
+  const tarefas = await Tarefa.find();
+  res.json(tarefas);
+});
+
 // Listagem de uma Tarefa (GET)
+app.get("/tarefas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Realiza uma busca específica por um documento
+    const tarefaExistente = await Tarefa.findById(id);
+
+    if (tarefaExistente) {
+      // Responde com o documento encontrado
+      res.json(tarefaExistente);
+    } else {
+      // Notifica o erro exatamente
+      res.status(404).json({ message: "Tarefa não encontrada." });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Um erro aconteceu." });
+  }
+});
+
 // Atualização de uma Tarefa (PUT)
 // Remoção de uma Tarefa (DELETE)
 
