@@ -54,7 +54,49 @@ app.get("/tarefas/:id", async (req, res) => {
 });
 
 // Atualização de uma Tarefa (PUT)
+app.put("/tarefas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, descricao, status } = req.body;
+
+    // Caso encontre o id, realiza a atualização
+    // Retorna o objeto encontrado
+    const tarefaExistente = await Tarefa.findByIdAndUpdate(id, {
+      titulo,
+      descricao,
+      status,
+    });
+
+    if (tarefaExistente) {
+      res.json({ message: "Tarefa editada." });
+    } else {
+      res.status(404).json({ message: "Tarefa não encontrada." });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Um erro aconteceu." });
+  }
+});
+
 // Remoção de uma Tarefa (DELETE)
+app.delete("/tarefas/:id", async (req, res) => {
+  try {
+    // Checa se a tarefa existe, e então remove do banco
+    const { id } = req.params;
+    const tarefaExistente = await Tarefa.findByIdAndRemove(id);
+
+    const tarefasRestantes = await Tarefa.find();
+
+    if (tarefaExistente) {
+      res.json({ message: "Tarefa excluída.", tarefasRestantes });
+    } else {
+      res.status(404).json({ message: "Tarefa não encontrada." });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Um erro aconteceu." });
+  }
+});
 
 // Escuta de eventos
 app.listen(3000, () => {
